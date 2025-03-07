@@ -1,2 +1,3 @@
-Nguyen Duc Bao Lam | 17 | FPT |
-Dumb data | 17 | Bach Khoa |
+Dumb data|17|FPT
+
+ABC|20|Dong

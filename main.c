@@ -59,7 +59,7 @@ void readFile(Student **students, int *size) {
 		// Tiến hành cấp phát bộ nhớ cho Struct Student
 		int code = allocateStudentMemory(students, tempSize);
 		if (code == 0) {
-			free(f);
+			fclose(f);
 			*size = 0;
 			return;
 		}
@@ -71,6 +71,23 @@ void readFile(Student **students, int *size) {
 		
 	*size = tempSize;
 	
+	fclose(f);
+}
+
+void writeFile(Student **students, int size) {
+	FILE *f;
+	f = fopen("students.txt", "w");
+	if (f == NULL) {
+		printf("File not found!\n");
+		return;
+	}
+	
+	int i;
+	for (i = 0; i < size; i++) {
+		fprintf(f, "%s|%d|%s\n", (*students)[i].name, (*students)[i].age, (*students)[i].school);
+	}
+	
+	printf("Overwritten successfully!\n");
 	fclose(f);
 }
 
@@ -110,8 +127,54 @@ void createANewStudentInfor(Student **students, int *size) {
 	*size = tempSize;
 	
 	printf("Added a new student to a list successfully!\n");
-	printf("Size of student'list: %d", *size);
+	printf("Size of student'list: %d\n", *size);
 	
+	/// Tiến hành bổ sung dữ liệu vào File
+	FILE *f;
+	f = fopen("students.txt", "a");
+	if (f == NULL) {
+		printf("File not found! Cannot save infor!");
+		return;
+	}
+	
+	fprintf(f, "%s|%d|%s \n", name, age, school);
+	fclose(f);
+	
+	printf("Saved new student to file successfully!\n");
+}
+
+int findStudentInfo(Student **students, int size, char name[MAX_NAME_LENGTH]) {
+	for (int i = 0; i < size; i++) {
+		int code = strcmp((*students)[i].name, name);
+		if (code == 0)
+			return i;
+	}
+	return -1;
+}
+
+void updateInfo(Student **students, int size) {
+	char name[MAX_NAME_LENGTH];
+	printf("Enter name to search: \n");
+	scanf("%s", &name);
+	
+	int position = findStudentInfo(students, size, name);
+	if (position == -1) {
+		printf("Student not found!\n");
+		printf("Can not update!\n");
+		return;
+	}
+	
+	int age;
+	char school[MAX_NAME_LENGTH];
+	printf("Overwrite student's age: ");
+	scanf("%d", &age);
+	printf("Overwrite student's school name: ");
+	scanf("%s", &school);
+	
+	(*students)[position].age = age;
+	strcpy((*students)[position].school, school);
+	
+	writeFile(students, size);
 	printf("\n");
 }
 
@@ -121,8 +184,10 @@ void printMenu() {
 	printf("-------------------------------------------\n");
 	printf("1. Print student list \n");
 	printf("2. Create a student infor \n");
-	printf("3. Delete a student \n");
-	printf("4. Exit \n");
+	printf("3. Update a student infor \n");
+	printf("4. Delete a student \n");
+	printf("5. Overwrite student file \n");
+	printf("6. Exit \n");
 	printf("-------------------------------------------\n");
 }
 
@@ -139,6 +204,7 @@ int main(int argc, char *argv[]) {
 	
 	do {
 		printMenu();
+		printf("Choose option: ");
 		scanf("%d", &menu);
 		
 		switch (menu) {
@@ -148,8 +214,14 @@ int main(int argc, char *argv[]) {
 			case 2:
 				createANewStudentInfor(&students, &size);
 				break;
+			case 3:
+				updateInfo(&students, size);
+				break;
+			case 5:
+				writeFile(&students, size);
+				break;
 		}
-	} while (menu != 4);
+	} while (menu != 6);
 		
 	free(students);
 	return 0;
