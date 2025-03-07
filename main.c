@@ -88,11 +88,31 @@ void createANewStudentInfor(Student **students, int *size) {
 	char school[MAX_SCHOOL_LENGTH];
 	int age;
 	printf("Enter student's name: ");
-	scanf("%s\n", &name);
+	scanf("%s", &name);
 	printf("Enter student's age: ");
-	scanf("%d\n", &age);
+	scanf("%d", &age);
 	printf("Enter student's school: ");
-	scanf("%s\n", &school);
+	scanf("%s", &school);
+	
+	int tempSize = *size;
+	int code = allocateStudentMemory(students, tempSize);
+	if (code == 0) {
+		return;
+	}
+	
+	/// Tiến hành ghi nhận dữ liệu
+	strcpy((*students)[*size].name, name);
+	(*students)[*size].age = age;
+	strcpy((*students)[*size].school, school);
+	
+	/// Cập nhật biến dữ liệu về kích thước
+	tempSize++;
+	*size = tempSize;
+	
+	printf("Added a new student to a list successfully!\n");
+	printf("Size of student'list: %d", *size);
+	
+	printf("\n");
 }
 
 // ******************************************************************* //
@@ -111,7 +131,7 @@ int main(int argc, char *argv[]) {
 	Student *students;
 	
 	/// Nạp dữ liệu vào mảng để quản lí
-	printf("Readind student's file!\n");
+	printf("Reading student's file!\n");
 	readFile(&students, &size);
 	printf("Reading finished successfully!\n");
 	
