@@ -28,6 +28,8 @@ void extractInfor(char name[MAX_NAME_LENGTH], int *age, char school[MAX_SCHOOL_L
 	// Lấy dữ liệu về trường
 	token = strtok(NULL, "|");
 	strcpy(school, token);
+	// Thay đổi dấu cuối cùng
+	school[strcspn(school, "\n")] = '\0';
 }
 
 int allocateStudentMemory(Student **students, int currentSize) {
@@ -79,6 +81,7 @@ void writeFile(Student **students, int size) {
 	f = fopen("students.txt", "w");
 	if (f == NULL) {
 		printf("File not found!\n");
+		printf("\n");
 		return;
 	}
 	
@@ -89,6 +92,15 @@ void writeFile(Student **students, int size) {
 	
 	printf("Overwritten successfully!\n");
 	fclose(f);
+}
+
+int findStudentInfo(Student **students, int size, char name[MAX_NAME_LENGTH]) {
+	for (int i = 0; i < size; i++) {
+		int code = strcmp((*students)[i].name, name);
+		if (code == 0)
+			return i;
+	}
+	return -1;
 }
 
 // ******************************************************************* //
@@ -143,24 +155,16 @@ void createANewStudentInfor(Student **students, int *size) {
 	printf("Saved new student to file successfully!\n");
 }
 
-int findStudentInfo(Student **students, int size, char name[MAX_NAME_LENGTH]) {
-	for (int i = 0; i < size; i++) {
-		int code = strcmp((*students)[i].name, name);
-		if (code == 0)
-			return i;
-	}
-	return -1;
-}
-
 void updateInfo(Student **students, int size) {
 	char name[MAX_NAME_LENGTH];
-	printf("Enter name to search: \n");
+	printf("Enter name to search:");
 	scanf("%s", &name);
 	
 	int position = findStudentInfo(students, size, name);
 	if (position == -1) {
 		printf("Student not found!\n");
 		printf("Can not update!\n");
+		printf("\n");
 		return;
 	}
 	
